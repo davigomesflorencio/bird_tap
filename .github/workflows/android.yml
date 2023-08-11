@@ -26,10 +26,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Generate app bundle
-        run: ./gradlew app:bundleRelease --stacktrace
+      - name: Build
+        run: ./gradlew build
 
-      - name: Sign app bundle
+      - name: Assemble Release Bundle
+        run: |
+          ./gradlew assembleRelease
+
+      - name: Sign Release
         id: sign_aab
         uses: r0adkll/sign-android-release@v1
         with:
@@ -41,13 +45,14 @@ jobs:
         env:
           # override default build-tools version (29.0.3) -- optional
           BUILD_TOOLS_VERSION: "30.0.2"
+
       - run: echo "Build status report=${{ job.status }}."
 
-      - name: Upload App Bundle
-        uses: actions/upload-artifact@v1
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
         with:
-          name: aab
-          path: ${{steps.sign_aab.outputs.signedReleaseFile}}
+          name: app
+          path: app/build/outputs/apk/release
 
 #      - name: Build APK
 #        run: bash ./gradlew assembleDebug --stacktrace
