@@ -1,26 +1,18 @@
-# This is a basic workflow to help you get started with Actions
 
 name: CI
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -31,33 +23,37 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Decode Keystore
-        env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Generate app bundle
+        run: ./gradlew app:bundleRelease --stacktrace
+
+      - name: Sign app bundle
         run: |
-          echo $ENCODED_STRING > keystore-b64.txt
-          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+          jarsigner -keystore app/*.jks \
+          -storepass ${{ secrets.SIGNING_KEY_STORE_PASSWORD }} -keypass ${{ secrets.SIGNING_KEY_PASSWORD }} \
+          app/build/release/app-release.aab ${{ secrets.SIGNING_KEY_ALIAS }}
 
-      - name: Build APK
-        run: bash ./gradlew assembleDebug --stacktrace
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+#      - name: Build APK
+#        run: bash ./gradlew assembleDebug --stacktrace
+#      - name: Upload APK
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: app-debug.apk
+#          path: app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Build Release APK
-        env:
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-        run: bash ./gradlew assembleRelease
-
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "app/build/release/*"
-          tag: v1.0.${{ github.run_number }}
-          token: ${{ secrets.TOKEN }}
+#      - name: Build Release APK
+#        env:
+#          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+#          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+#          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+#          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+#        run: bash ./gradlew assembleRelease
+#
+#      - name: Push to Releases
+#        uses: ncipollo/release-action@v1
+#        with:
+#          artifacts: "app/build/release/*"
+#          tag: v1.0.${{ github.run_number }}
+#          token: ${{ secrets.TOKEN }}
