@@ -27,13 +27,25 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Generate app bundle
-        run: bash ./gradlew app:bundleRelease --stacktrace
+        run: ./gradlew app:bundleRelease --stacktrace
 
       - name: Sign app bundle
-        run: |
-          jarsigner -keystore app/*.jks \
-          -storepass ${{ secrets.SIGNING_KEY_STORE_PASSWORD }} -keypass ${{ secrets.SIGNING_KEY_PASSWORD }} \
-          app/build/release/app-release.aab ${{ secrets.SIGNING_KEY_ALIAS }}
+        id: sign_aab
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+
+      - run: echo "Build status report=${{ job.status }}."
+
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v1
+        with:
+          name: aab
+          path: ${{steps.sign_aab.outputs.signedReleaseFile}}
 
 #      - name: Build APK
 #        run: bash ./gradlew assembleDebug --stacktrace
@@ -50,10 +62,3 @@ jobs:
 #          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
 #          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 #        run: bash ./gradlew assembleRelease
-#
-#      - name: Push to Releases
-#        uses: ncipollo/release-action@v1
-#        with:
-#          artifacts: "app/build/release/*"
-#          tag: v1.0.${{ github.run_number }}
-#          token: ${{ secrets.TOKEN }}
