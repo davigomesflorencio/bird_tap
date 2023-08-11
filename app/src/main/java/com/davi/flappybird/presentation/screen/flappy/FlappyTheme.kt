@@ -8,10 +8,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.davi.flappybird.presentation.screen.flappy.brown
-import com.davi.flappybird.presentation.screen.flappy.darkGreen
-import com.davi.flappybird.presentation.screen.flappy.lightGreen
-import com.davi.flappybird.presentation.screen.flappy.skyColor
 import com.davi.flappybird.presentation.theme.shapes
 
 @Composable
@@ -22,7 +18,6 @@ fun FlappyBirdTheme(content: @Composable() () -> Unit) {
         secondary = lightGreen,
         surface = skyColor,
         background = brown,
-        onPrimary = Color.White,
         onBackground = Color.White,
         onSurface = Color.White
     )
