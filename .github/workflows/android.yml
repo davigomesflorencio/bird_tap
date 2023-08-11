@@ -27,7 +27,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Generate app bundle
-        run: ./gradlew app:bundleRelease --stacktrace
+        run: bash ./gradlew app:bundleRelease --stacktrace
 
       - name: Sign app bundle
         run: |
