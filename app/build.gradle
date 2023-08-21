@@ -10,11 +10,11 @@ plugins {
 //}
 
 android {
-    namespace 'com.davi.flappybird'
+    namespace 'com.davi.dev.birdtap'
     compileSdk  33
 
     defaultConfig {
-        applicationId "com.davi.flappybird"
+        applicationId "com.davi.dev.birdtap"
         minSdk 30
         targetSdk 33
         versionCode 2
