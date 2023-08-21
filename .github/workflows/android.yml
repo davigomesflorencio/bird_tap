@@ -30,8 +30,7 @@ jobs:
         run: ./gradlew build
 
       - name: Assemble Release Bundle
-        run: |
-          ./gradlew assembleRelease
+        run: ./gradlew assembleRelease
 
 #      - name: Sign Release
 #        id: sign_aab
