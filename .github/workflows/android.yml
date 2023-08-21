@@ -33,26 +33,26 @@ jobs:
         run: |
           ./gradlew assembleRelease
 
-      - name: Sign Release
-        id: sign_aab
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
-          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.SIGNING_KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "29.0.3"
-
-      - run: echo "Build status report=${{ job.status }}."
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v2
-        with:
-          name: app
-          path: app/build/outputs/apk/release
+#      - name: Sign Release
+#        id: sign_aab
+#        uses: r0adkll/sign-android-release@v1
+#        with:
+#          releaseDirectory: app/build/outputs/apk/release
+#          signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+#          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+#          keyStorePassword: ${{ secrets.SIGNING_KEY_STORE_PASSWORD }}
+#          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+#        env:
+#          # override default build-tools version (29.0.3) -- optional
+#          BUILD_TOOLS_VERSION: "29.0.3"
+#
+#      - run: echo "Build status report=${{ job.status }}."
+#
+#      - name: Upload APK
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: app
+#          path: app/build/outputs/apk/release
 
 #      - name: Build APK
 #        run: bash ./gradlew assembleDebug --stacktrace
